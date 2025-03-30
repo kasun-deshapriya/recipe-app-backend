@@ -11,7 +11,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://recipeapp-omega-sandy.vercel.app/",
+      "https://recipeapp-omega-sandy.vercel.app",
     ],
     credentials: true,
   })
