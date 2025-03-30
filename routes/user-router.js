@@ -2,9 +2,8 @@ import express from "express";
 import { pool } from "../db/db.js";
 import jwt from "jsonwebtoken";
 
-
 const UserRouter = express.Router();
-const JWT_SECRET = "jwt_secret_login";
+// const JWT_SECRET = "jwt_secret_login";
 
 UserRouter.get("/", (req, res) => {
   res.send("Node.js App is running!");
@@ -26,9 +25,13 @@ UserRouter.post("/singup-user", async (req, res) => {
       return res.status(500).json({ error: "Internal Server Error" });
     }
 
-    const token = jwt.sign({ userId: result.rows[0].id, email }, JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      { userId: result.rows[0].id, email },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1h",
+      }
+    );
 
     console.log("Generated Token:", token);
 
@@ -48,7 +51,6 @@ UserRouter.post("/singup-user", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 UserRouter.post("/login-user", async (req, res) => {
   try {
@@ -75,7 +77,7 @@ UserRouter.post("/login-user", async (req, res) => {
         userId: user.id,
         email: user.email,
       },
-      JWT_SECRET,
+      process.env.JWT_SECRET,
       {
         expiresIn: "1h",
       }
@@ -177,7 +179,5 @@ UserRouter.post("/logout-user", (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 });
-
-
 
 export default UserRouter;
