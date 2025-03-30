@@ -21,20 +21,21 @@ UserRouter.post("/singup-user", async (req, res) => {
       [first_name, last_name, email, mobile, password]
     );
 
-    // Generate a JWT token
-    const token = jwt.sign(
-      {
-        userId: result.rows[0].id,
-        email: email,
-      },
-      JWT_SECRET,
-      {
-        expiresIn: "1h",
-      }
-    );
+    if (!JWT_SECRET) {
+      console.error("JWT_SECRET is not defined");
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    const token = jwt.sign({ userId: result.rows[0].id, email }, JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    console.log("Generated Token:", token);
+
     res.cookie("token", token, {
       httpOnly: true,
-      maxAge: 3600000, //1 houre
+      sameSite: "strict",
+      maxAge: 3600000, // 1 hour
     });
 
     res.status(201).json({
@@ -46,6 +47,7 @@ UserRouter.post("/singup-user", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 UserRouter.post("/login-user", async (req, res) => {
   try {
