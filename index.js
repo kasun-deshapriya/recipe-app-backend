@@ -7,12 +7,10 @@ import cookieParser from "cookie-parser";
 const app = express();
 app.use(cookieParser());
 
-app.use(
-  cors({
-    origin: true,
-    credentials: true
-  })
-);
+app.use(cors({
+  origin: ["http://localhost:3000", "https://recipeapp-omega-sandy.vercel.app"],
+  credentials: true, 
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -20,13 +18,14 @@ const port = 5000;
 
 app.use("/api/v1/", UserRouter);
 
-try {
-  await pool.connect();
-  console.log("Connected to the database.");
-  // Start Server
-  app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
-  });
-} catch (error) {
+try{
+await pool.connect();
+console.log("Connected to the database.");
+// Start Server
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
+});
+}
+catch (error){
   console.log("Error connecting to the database.", error);
 }
