@@ -12,5 +12,6 @@ export const pool = new Pool({
   //   port: process.env.DB_PORT,
   connectionString: process.env.DATABASE_URL, // Use environment variable
   ssl: { rejectUnauthorized: false }, // Required for some cloud providers
+  
 });
 console.log("pool", pool);
