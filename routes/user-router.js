@@ -20,7 +20,7 @@ UserRouter.post("/singup-user", async (req, res) => {
       [first_name, last_name, email, mobile, password]
     );
 
-    if (!JWT_SECRET) {
+    if (!process.env.JWT_SECRET) {
       console.error("JWT_SECRET is not defined");
       return res.status(500).json({ error: "Internal Server Error" });
     }
