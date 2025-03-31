@@ -69,8 +69,8 @@ UserRouter.post("/login-user", async (req, res) => {
         .status(401)
         .json({ success: false, message: "Invalid email or password" });
     }
-     console.log("process.env.JWT_SECRET", process.env.JWT_SECRET);
-     
+    console.log("process.env.JWT_SECRET", process.env.JWT_SECRET);
+
     // Generate a JWT token
     const token = jwt.sign(
       {
@@ -85,6 +85,8 @@ UserRouter.post("/login-user", async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       maxAge: 3600000, // 1 hour
+      secure: process.env.NODE_ENV === "production", // Ensures HTTPS in production
+      sameSite: "none", // Needed for cross-origin requests
     });
 
     return res.status(200).json({
