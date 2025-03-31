@@ -86,7 +86,7 @@ UserRouter.post("/login-user", async (req, res) => {
       httpOnly: true,
       maxAge: 3600000, // 1 hour
       secure: process.env.NODE_ENV === "production", // Ensures HTTPS in production
-      sameSite: "none", // Needed for cross-origin requests
+      //sameSite: "none", // Needed for cross-origin requests
     });
 
     return res.status(200).json({
