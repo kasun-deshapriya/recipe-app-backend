@@ -70,7 +70,8 @@ UserRouter.post("/login-user", async (req, res) => {
         .status(401)
         .json({ success: false, message: "Invalid email or password" });
     }
-
+     console.log("process.env.JWT_SECRET", process.env.JWT_SECRET);
+     
     // Generate a JWT token
     const token = jwt.sign(
       {
@@ -108,7 +109,7 @@ UserRouter.post("/add-to-favourite", async (req, res) => {
 
   if (token) {
     try {
-      const decodedToken = jwt.verify(token, JWT_SECRET);
+      const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
       console.log("Decoded Token:", decodedToken);
       userId = decodedToken.userId;
     } catch (error) {
@@ -145,7 +146,10 @@ UserRouter.get("/favourites", async (req, res) => {
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (!decoded) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
     const userId = decoded.userId;
 
     const result = await pool.query(
