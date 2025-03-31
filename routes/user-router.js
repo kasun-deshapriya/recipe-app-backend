@@ -14,11 +14,19 @@ UserRouter.post("/singup-user", async (req, res) => {
   console.log("req.body", req.body);
 
   try {
-    const result = await pool.query(
-      `INSERT INTO user_registration (first_name, last_name, email, mobile, password) 
-       VALUES ($1, $2, $3, $4, $5) RETURNING id`,
-      [first_name, last_name, email, mobile, password]
+    const existingUser = await pool.query(
+      "SELECT * FROM user_registration WHERE email = $1",
+      [email]
     );
+    if (existingUser.rows.length > 0) {
+      return res.status(200).json({ error: "User already exists" });
+    } else {
+      const result = await pool.query(
+        `INSERT INTO user_registration (first_name, last_name, email, mobile, password) 
+       VALUES ($1, $2, $3, $4, $5) RETURNING id`,
+        [first_name, last_name, email, mobile, password]
+      );
+    }
 
     if (!process.env.JWT_SECRET) {
       console.error("JWT_SECRET is not defined");
@@ -180,6 +188,31 @@ UserRouter.post("/logout-user", (req, res) => {
     });
   } catch (error) {
     console.error("Error logging out:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
+UserRouter.delete("/delete-favorite/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await pool.query(
+      "DELETE FROM favourite_item WHERE id = $1 RETURNING *",
+      [id]
+    );
+
+    if (result.rowCount === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Item not found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Favorite item deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting favorite item:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 });
