@@ -194,10 +194,11 @@ UserRouter.post("/logout-user", (req, res) => {
 
 UserRouter.delete("/delete-favorite/:id", async (req, res) => {
   const { id } = req.params;
-
+  console.log("id", id);
+  
   try {
     const result = await pool.query(
-      "DELETE FROM favourite_item WHERE id = $1 RETURNING *",
+      "DELETE FROM favourite_item WHERE item_id = $1 RETURNING *",
       [id]
     );
 
